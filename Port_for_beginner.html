@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ポート入門 — Port</title>
+<style>
+:root{
+  --bg:#faf6ef; --card:#ffffff; --ink:#2b211b; --sub:#6e5f55;
+  --main:#6a1430; --main2:#8e2440; --gold:#c08a3e; --gold-l:#f3e6cf;
+  --line:#e7dccb; --chip:#f6efe3; --shadow:0 4px 18px rgba(80,40,10,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--ink);line-height:1.8;font-size:15px}
+.serif{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif}
+a{color:var(--main2)}
+/* header */
+header.hero{background:linear-gradient(160deg,#2a0610 0%,#6a1430 55%,#a8473a 100%);color:#fff;text-align:center;padding:44px 20px 36px}
+.hero .emo{font-size:28px;letter-spacing:10px}
+.hero h1{font-size:30px;margin:10px 0 4px;letter-spacing:.06em}
+.hero .tag{color:#f3d9a8;font-size:14px;letter-spacing:.2em}
+.hero .lead{margin-top:14px;font-size:13px;opacity:.9}
+/* nav */
+nav.tabs{position:sticky;top:0;z-index:10;background:rgba(250,246,239,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+nav.tabs a{display:inline-block;padding:11px 13px;font-size:13px;color:var(--sub);text-decoration:none;border-bottom:3px solid transparent}
+nav.tabs a.on{color:var(--main);border-bottom-color:var(--gold);font-weight:700}
+main{max-width:760px;margin:0 auto;padding:22px 16px 60px}
+.page{scroll-margin-top:52px}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* cards */
+.card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:22px 20px;margin-bottom:18px;border:1px solid var(--line)}
+.no{display:inline-block;font-size:12px;color:#fff;background:var(--main);border-radius:999px;padding:2px 12px;letter-spacing:.08em}
+.ttl{font-size:22px;color:var(--main);margin:10px 0 2px;line-height:1.4}
+.en{font-size:13px;color:var(--gold);letter-spacing:.06em}
+.intro{margin-top:10px;color:var(--sub);font-size:14px}
+h3.sec{font-size:16px;color:var(--main);margin:22px 0 10px;padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px}
+.kv b{color:var(--main2);white-space:nowrap}
+ul.dot{list-style:none;font-size:14px}
+ul.dot li{position:relative;padding-left:16px;margin:4px 0}
+ul.dot li::before{content:"";position:absolute;left:2px;top:.75em;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:2px 12px;font-size:13px}
+.note{background:var(--gold-l);border-left:4px solid var(--gold);border-radius:8px;padding:10px 14px;font-size:13.5px;margin:12px 0}
+.note.sub{background:#f4f1ec;border-left-color:#b9a99a;color:var(--sub)}
+.big{font-size:17px;font-weight:700;color:var(--main);line-height:1.6}
+.emorow{font-size:22px;letter-spacing:4px;margin-bottom:4px}
+.foot{text-align:right;font-size:12px;color:var(--sub);margin-top:14px}
+/* tables */
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:520px}
+th,td{border-bottom:1px solid var(--line);padding:8px 8px;text-align:left;vertical-align:top}
+th{background:var(--chip);color:var(--main);font-weight:700;white-space:nowrap}
+/* timeline */
+.tl{border-left:2px solid var(--gold);margin-left:8px;padding-left:16px}
+.tl div{position:relative;margin-bottom:12px;font-size:14px}
+.tl div::before{content:"";position:absolute;left:-23px;top:.55em;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--main)}
+.tl b{color:var(--main2);display:block;font-size:13px}
+/* list (index) */
+.list a{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--ink);padding:12px 4px;border-bottom:1px solid var(--line)}
+.list .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--main);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+.list .t{font-weight:700}
+.list .d{font-size:12px;color:var(--sub)}
+.badge{font-size:11px;border-radius:6px;padding:1px 8px;background:var(--gold-l);color:var(--main2);margin-right:6px}
+/* compare */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vs .box{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fffdf9}
+.vs .box h4{color:var(--main);font-size:15px;margin-bottom:6px}
+/* sweetness scale */
+.scale{display:flex;border-radius:10px;overflow:hidden;margin:10px 0;font-size:12px;text-align:center;color:#fff}
+.scale div{flex:1;padding:8px 2px;line-height:1.4}
+/* variety mini-card */
+.vc{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;background:#fffdf9}
+.vc h4{color:var(--main);font-size:16px}
+.vc .en{margin-left:6px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pair div{background:var(--chip);border-radius:10px;padding:10px 12px;font-size:13px}
+.pair b{display:block;color:var(--main2)}
+.nav2{display:flex;justify-content:space-between;margin-top:8px}
+.nav2 a{font-size:13px;text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;color:var(--main)}
+.home{display:block;text-align:center;margin:26px auto 0;font-size:14px;text-decoration:none;color:var(--main)}
+footer{text-align:center;font-size:12px;color:var(--sub);padding:20px}
+@media(max-width:560px){.vs,.pair{grid-template-columns:1fr}.ttl{font-size:20px}.hero h1{font-size:26px}}
+</style>
+</head>
+<body>
+<header class="hero" id="top">
+  <div class="emo">🍇🍷</div>
+  <h1 class="serif">ポート入門</h1>
+  <div class="tag serif">— Port —</div>
+  <div class="lead">ドウロ渓谷が生む甘口の酒精強化ワイン × 16のテーマ ／ WSET D5 第4章</div>
+</header>
+<nav class="tabs" id="tabs"></nav>
+<main>
+
+<section class="page" id="winelist" data-tab="🍷リスト">
+  <div class="card">
+    <div class="ttl serif">🍷 本日の学習リスト</div>
+    <div class="intro">出典：WSET Level 4 Diploma D5 Fortified Wines（2025年8月版）第4章 Port（p.31–53）。「補足」はテキスト外の一般的な説明です。</div>
+    <div class="list" style="margin-top:10px">
+      <a href="#w1"><span class="n">1</span><span><span class="badge">概要</span><span class="t">ひとことで言うと？</span><br><span class="d">ポートの正体と名前の由来</span></span></a>
+      <a href="#w2"><span class="n">2</span><span><span class="badge">歴史</span><span class="t">英仏の貿易戦争から生まれた</span><br><span class="d">メシュエン条約・ポンバル・IVDP</span></span></a>
+      <a href="#w3"><span class="n">3</span><span><span class="badge">産地</span><span class="t">気候と3つのサブリージョン</span><br><span class="d">バイショ・コルゴ／シマ・コルゴ／ドウロ・スペリオール</span></span></a>
+      <a href="#w4"><span class="n">4</span><span><span class="badge">畑</span><span class="t">片岩土壌と畑のレイアウト</span><br><span class="d">ソカルコス・パタマレス・ヴィーニャ・アオ・アルト</span></span></a>
+      <a href="#w5"><span class="n">5</span><span><span class="badge">栽培</span><span class="t">栽培管理と収穫</span><br><span class="d">台木・収量・人手不足</span></span></a>
+      <a href="#w6"><span class="n">6</span><span><span class="badge">品種</span><span class="t">主要品種</span><br><span class="d">推奨5品種と白ブドウ</span></span></a>
+      <a href="#w7"><span class="n">7</span><span><span class="badge">醸造</span><span class="t">発酵と抽出</span><br><span class="d">足踏み・ロボット・オートヴィニファイヤー</span></span></a>
+      <a href="#w8"><span class="n">8</span><span><span class="badge">醸造</span><span class="t">酒精強化とブレンド</span><br><span class="d">77%のアグアルデンテ</span></span></a>
+      <a href="#w9"><span class="n">9</span><span><span class="badge">熟成</span><span class="t">熟成の基本</span><br><span class="d">ガイアのロッジ・大樽と小樽</span></span></a>
+      <a href="#w10"><span class="n">10</span><span><span class="badge">スタイル</span><span class="t">ルビー系とトウニー系</span><br><span class="d">ベーシック・リザーヴ・年数表示・コリェイタ</span></span></a>
+      <a href="#w11"><span class="n">11</span><span><span class="badge">スタイル</span><span class="t">ヴィンテージ系</span><br><span class="d">ヴィンテージ・シングル・キンタ・クラステッド・LBV</span></span></a>
+      <a href="#w12"><span class="n">12</span><span><span class="badge">スタイル</span><span class="t">ロゼ・白・超熟成</span><br><span class="d">ピンク・ポートと3つの白スタイル</span></span></a>
+      <a href="#w13"><span class="n">13</span><span><span class="badge">ビジネス</span><span class="t">業界構造と IVDP</span><br><span class="d">大手5社で8割</span></span></a>
+      <a href="#w14"><span class="n">14</span><span><span class="badge">ビジネス</span><span class="t">ベネフィシオ制度</span><br><span class="d">A〜Iの畑の格付けと生産量の管理</span></span></a>
+      <a href="#w15"><span class="n">15</span><span><span class="badge">ビジネス</span><span class="t">販売と市場</span><br><span class="d">量は減少、単価は上昇</span></span></a>
+      <a href="#w16"><span class="n">16</span><span><span class="badge">まとめ</span><span class="t">これだけは覚えよう10</span><br><span class="d">試験前の総復習</span></span></a>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="w1" data-tab="🍷概要">
+  <div class="card">
+    <span class="no">No.1</span>
+    <div class="ttl serif">🍷 ポートってどんなワイン？</div>
+    <div class="en">What is Port?</div>
+    <p class="big" style="margin-top:12px">発酵の途中でブドウのスピリッツを加えて止めた、ポルトガル・ドウロ地方の甘口酒精強化ワイン</p>
+    <h3 class="sec">✨ 4つの特徴</h3>
+    <ul class="dot">
+      <li>発酵途中で酒精強化 → ブドウの<b>糖分が残って甘い</b>（残糖 80〜120g/L）</li>
+      <li>アルコール度数は<b>19〜22%</b>が中心</li>
+      <li>加えるスピリッツは<b>77%</b>と低め → 個性があり、ポートらしいアルコールの香りが出る</li>
+      <li>熟成方法の違いで、<b>ルビー系（果実味）</b>と<b>トウニー系（熟成香）</b>など多彩なスタイルに</li>
+    </ul>
+    <div class="note sub">補足：マデイラは「加熱＋酸化」が特徴でしたが、ポートは「抽出＋熟成方法の違い」でスタイルが分かれるのがポイントです。</div>
+    <h3 class="sec">🌍 産地</h3>
+    <div class="kv">
+      <b>📍 産地</b><span>ポルトガル北東部・ドウロ地方（ドウロ川沿い）</span>
+      <b>🏙️ 名前の由来</b><span>ドウロ川河口の都市「ポルト（Porto）」</span>
+      <b>🏚️ 熟成の拠点</b><span>ポルトの対岸、ヴィラ・ノヴァ・デ・ガイアの貯蔵庫「ロッジ」</span>
+      <b>📏 規模</b><span>アペラシオン全体 25万ha、うちブドウ畑 約4.1万ha、ポート用登録 約3.3万ha</span>
+    </div>
+    <div class="foot">1 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w2" data-tab="📜歴史">
+  <div class="card">
+    <span class="no">No.2</span>
+    <div class="ttl serif">📜 歴史：英仏の貿易戦争から生まれた</div>
+    <div class="en">History</div>
+    <div class="note"><b>⛪ ポイント</b><br>1600年代後半、英国商人がラメーゴの修道院長を訪ねると、彼は<b>発酵途中で</b>酒精強化していた。その甘いワインが辛口より高品質だと感じた商人は、在庫をすべて英国へ送った。<br>→ これが「発酵中に酒精強化する」現在のポートの原点。</div>
+    <h3 class="sec">🕰️ 年表</h3>
+    <div class="tl">
+      <div><b>1600年代</b>英仏の貿易戦争。英国でポルトガルの力強い赤ワインが人気に。輸送中の安定のためブランデーを添加。Croft、Kopke、Taylor's、Warre などのシッパーが設立</div>
+      <div><b>1703年</b>メシュエン条約：英国でポルトガルワインの関税が他国より低くなる</div>
+      <div><b>1700年代前半</b>人気が出すぎて粗悪品（質の悪いスピリッツ、ニワトコの実で色付けなど）が横行 → 需要と価格が暴落</div>
+      <div><b>1756年</b>宰相ポンバル侯爵がポートの畑を<b>線引き（境界画定）</b>し、生産規則を制定。輸出用ポートを独占的に扱う会社（通称 Real Companhia Velha）も設立</div>
+      <div><b>1800年代</b>半島戦争・内戦、さらにうどんこ病とフィロキセラ。安くなった土地をシッパーが買い、自社農園（キンタ）を所有し始める</div>
+      <div><b>1932〜33年</b>栽培者を監督する Casa do Douro と、業界を管理する IVP を設立。畑を A〜I で格付けする<b>ベネフィシオ制度</b>開始</div>
+      <div><b>1980年代前半</b>世界銀行の低利融資で、A・B級の畑に推奨5品種を植栽。幅の広い段々畑「パタマレス」を約2,500ha造成</div>
+      <div><b>1986年 / 1991年</b>EU加盟 → 1991年から生産者がスピリッツを自由に購入でき、品質向上</div>
+      <div><b>2003年</b>ポートと非酒精強化のドウロワインをまとめて管理する <b>IVDP</b> 設立</div>
+      <div><b>2000年代〜</b>改良型パタマレス、推奨5品種以外の在来品種の活用、足踏みから機械化へ</div>
+    </div>
+    <div class="foot">2 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w3" data-tab="🌤️気候・産地">
+  <div class="card">
+    <span class="no">No.3</span>
+    <div class="ttl serif">🌤️ 気候と3つのサブリージョン</div>
+    <div class="en">Location & Climate</div>
+    <h3 class="sec">🌡️ 気候</h3>
+    <ul class="dot">
+      <li><b>暑い大陸性気候</b>。夏は40℃に達し、冬は氷点下も珍しくない</li>
+      <li>大西洋から約70km、マラン山脈の東側（風下）にある → 海沿いのポルトよりずっと暑く乾燥</li>
+      <li>支流が入り組み、向き・標高がさまざま。畑は標高約150〜900m</li>
+    </ul>
+    <h3 class="sec">🗺️ 西から東へ3つのサブリージョン</h3>
+    <div class="tw"><table>
+      <tr><th>サブリージョン</th><th>気候</th><th>年間降水量</th><th>主な用途・特徴</th></tr>
+      <tr><td><b>バイショ・コルゴ</b><br>Baixo Corgo（西）</td><td>最も涼しく雨が多い</td><td>900mm</td><td>手頃なルビー・トウニー用</td></tr>
+      <tr><td><b>シマ・コルゴ</b><br>Cima Corgo（中央）</td><td>より暑く乾燥</td><td>700mm</td><td>有名生産者の畑が集中。年数表示トウニー、ヴィンテージ用</td></tr>
+      <tr><td><b>ドウロ・スペリオール</b><br>Douro Superior（東）</td><td>最も暑く乾燥</td><td>450mm</td><td>干ばつが多く植栽はまばら。平らな土地は機械化しやすく植栽が増加中</td></tr>
+    </table></div>
+    <div class="note">💡 覚え方：<b>西（海側）ほど涼しく湿潤、東（内陸）ほど暑く乾燥。</b>収穫は東のスペリオールから始まり、西のバイショ・コルゴで終わる。</div>
+    <div class="foot">3 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w4" data-tab="🪨土壌・畑">
+  <div class="card">
+    <span class="no">No.4</span>
+    <div class="ttl serif">🪨 片岩土壌と畑のレイアウト</div>
+    <div class="en">Soils & Vineyard Layout</div>
+    <h3 class="sec">🪨 土壌：片岩（シスト）</h3>
+    <ul class="dot">
+      <li>石が多く浅く、水はけが良く栄養が乏しい → 樹勢が抑えられる</li>
+      <li>片岩は<b>縦方向に割れている</b>ので、雨水がしみ込み、根が深く伸びて水を探せる</li>
+      <li>ポート地域の境界はほぼ片岩の範囲に沿う。隣接する花崗岩は水を通しにくく、ブドウが育ちにくい</li>
+      <li>灌漑は干ばつなど例外時のみ。2019年から許可制ではなく、IVDP への事前通知制に</li>
+    </ul>
+    <h3 class="sec">⛰️ 3つの畑のレイアウト</h3>
+    <p style="font-size:14px">斜面は勾配30%（17°）超が多く、選択肢は限られる。</p>
+    <div class="tw"><table>
+      <tr><th>レイアウト</th><th>つくり</th><th>植栽密度</th><th>長所</th><th>短所</th></tr>
+      <tr><td><b>ソカルコス</b><br>Socalcos</td><td>伝統的な狭い段々畑。石積みの壁で支える。1〜2列</td><td>最大6,000本/ha</td><td>ユネスコ保護の景観</td><td>機械化しにくい。壁の維持に人手。新植には使われない</td></tr>
+      <tr><td><b>パタマレス</b><br>Patamares</td><td>土の土手で支える段々畑。等高線に沿って植える</td><td>3,000〜3,500本/ha</td><td>小型トラクター可。造成・維持が安い</td><td>土手が場所をとる。浸食・雑草</td></tr>
+      <tr><td><b>ヴィーニャ・アオ・アルト</b><br>Vinha ao Alto</td><td>斜面を上下（縦）に植える</td><td>約5,000本/ha</td><td>最も安い。土地効率が良い</td><td>勾配40%（22°）未満に限る。流水・浸食</td></tr>
+    </table></div>
+    <h3 class="sec">🚜 パタマレスの2タイプ</h3>
+    <div class="vs">
+      <div class="box"><h4>幅広（2列）</h4><ul class="dot"><li>大型ブルドーザー時代の旧型</li><li>土地効率は良いが、外側の列ばかり日が当たり熟度がばらつく</li></ul></div>
+      <div class="box"><h4>幅狭（1列）</h4><ul class="dot"><li>小型ブルドーザー＋レーザーで精密に造成</li><li>山側に少し傾けて保水・浸食防止。長さ方向にも傾斜をつけ排水</li><li>熟度のばらつきが少ない</li></ul></div>
+    </div>
+    <div class="foot">4 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w5" data-tab="🌱栽培">
+  <div class="card">
+    <span class="no">No.5</span>
+    <div class="ttl serif">🌱 栽培管理と収穫</div>
+    <div class="en">Vineyard Management</div>
+    <div class="kv">
+      <b>✂️ 仕立て</b><span>コルドン＋短梢、または株仕立て＋長梢。どちらも垣根（VSP）で日当たりを調整</span>
+      <b>🌿 台木</b><span>乾燥に強い 110R・1103P（V. rupestris × V. berlandieri）</span>
+      <b>📉 収量</b><span>上限 55hL/ha だが、水不足などで実際は約30hL/haのことも</span>
+      <b>⚠️ リスク</b><span>高地の春霜。西のバイショ・コルゴでは初夏の冷たい雨による結実不良、べと病・灰色かび病</span>
+      <b>🧪 土づくり</b><span>肥料で栄養を補う。パタマレスの土手は除草剤や小型草刈り機、アオ・アルトでは被覆作物で浸食防止</span>
+      <b>♻️ 環境</b><span>大手を中心にサステナブル・有機栽培が増え、認証取得も</span>
+    </div>
+    <h3 class="sec">🧺 収穫</h3>
+    <ul class="dot">
+      <li>急斜面のため<b>手摘み</b></li>
+      <li>高齢化・人口減少で人手確保が難しくなっている</li>
+      <li>最大の栽培者 Symington Family Estates は2015年から急斜面用の収穫機を開発中</li>
+      <li>微気候・品種の多さ・手摘みの遅さから、収穫は数週間にわたる</li>
+    </ul>
+    <div class="foot">5 / 16</div>
+  </div>
+</section>
+<section class="page" id="w6" data-tab="🍇品種">
+  <div class="card">
+    <span class="no">No.6</span>
+    <div class="ttl serif">🍇 主要品種</div>
+    <div class="en">Grape Varieties</div>
+    <ul class="dot">
+      <li>許可品種は<b>100種類以上</b>。1980年代以降は<b>推奨5品種</b>に植え替え・研究が集中</li>
+      <li>推奨5品種：トウリガ・フランカ、ティンタ・ロリス、ティンタ・バロッカ、トウリガ・ナシオナル、ティント・カン</li>
+      <li>小規模な畑では今も<b>混植（フィールド・ブレンド）</b>が多く、全品種を一度に収穫</li>
+      <li>ほとんどのポートは複数品種のブレンド → 年ごとの品質差を小さくできる</li>
+      <li>樹齢100年超もある<b>古木（ヴィーニャ・ヴェーリャ）</b>は高級ポートの重要な要素</li>
+    </ul>
+    <h3 class="sec">🟣 黒ブドウ</h3>
+    <div class="vc"><h4>🟣 トウリガ・フランカ<span class="en">Touriga Franca</span></h4><div class="chips"><span class="chip">⭐ 推奨5品種</span><span class="chip">🥇 最も多く栽培</span></div><ul class="dot"><li>晩熟 → 低地・南向きの最も暑い場所向き。果皮が厚くカビに強い</li><li>樹勢が強く夏季剪定が必要</li><li>色・タンニン・酸、みずみずしい赤黒果実、花の香りをもたらす</li></ul></div>
+    <div class="vc"><h4>🟣 ティンタ・ロリス<span class="en">Tinta Roriz</span></h4><div class="chips"><span class="chip">⭐ 推奨5品種</span><span class="chip">＝テンプラニーリョ／アラゴネス</span></div><ul class="dot"><li>早熟で水ストレスに弱い → 比較的涼しい場所向き</li><li>多収なので収量制限が必要。ボディと色をもたらす</li></ul></div>
+    <div class="vc"><h4>🟣 ティンタ・バロッカ<span class="en">Tinta Barroca</span></h4><div class="chips"><span class="chip">⭐ 推奨5品種</span></div><ul class="dot"><li>早熟。暑さで焼けたり萎んだりしやすい → 高地・北向きの最も涼しい場所向き</li><li>多収。花の香りは控えめで土っぽい風味。色あせが早い</li></ul></div>
+    <div class="vc"><h4>🟣 トウリガ・ナシオナル<span class="en">Touriga Nacional</span></h4><div class="chips"><span class="chip">⭐ 推奨5品種</span><span class="chip">🏆 長期熟成向き</span></div><ul class="dot"><li>中程度の熟期。果皮が厚く、濃い色と高いタンニン</li><li>樹勢が強い。花ぶるいで収量が大きく減ることも</li><li>酸を保ち、凝縮した黒果実と花の香り。高級・長期熟成ポートの要</li></ul></div>
+    <div class="vc"><h4>🟣 ティント・カン<span class="en">Tinto Cão</span></h4><div class="chips"><span class="chip">⭐ 推奨5品種</span></div><ul class="dot"><li>低収量。小粒で果皮が厚くカビに強い。晩熟で暑さに非常に強い</li><li>凝縮感と高い酸、長熟能力</li></ul></div>
+    <div class="vc"><h4>🟣 ティンタ・アマレラ<span class="en">Tinta Amarela</span></h4><div class="chips"><span class="chip">＝トリンカデイラ</span></div><ul class="dot"><li>房が密でカビに弱い。フルボディで凝縮した黒果実とスパイス。若くても熟成しても楽しめる</li></ul></div>
+    <div class="vc"><h4>🟣 ソウザン<span class="en">Sousão</span></h4><ul class="dot"><li>果皮が厚く、濃い色と高い酸を保てるため人気上昇中</li></ul></div>
+    <h3 class="sec">🟢 白ブドウ</h3>
+    <div class="vc"><h4>🟢 マルヴァジア・フィナ<span class="en">Malvasia Fina</span></h4><div class="chips"><span class="chip">＝マデイラのボアル</span></div><ul class="dot"><li>ニュートラル、中程度の酸、フルボディ、ほのかな蜂蜜の風味</li></ul></div>
+    <div class="vc"><h4>🟢 モスカテル・ガレゴ・ブランコ<span class="en">Moscatel Galego Branco</span></h4><div class="chips"><span class="chip">＝ミュスカ・ブラン・ア・プティ・グラン</span></div><ul class="dot"><li>アロマティック品種。熟成させないフルーティーな白ポートによく使われる</li></ul></div>
+    <div class="foot">6 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w7" data-tab="🦶発酵・抽出">
+  <div class="card">
+    <span class="no">No.7</span>
+    <div class="ttl serif">🦶 発酵と抽出</div>
+    <div class="en">Fermentation & Extraction</div>
+    <div class="note"><b>💡 ポイント</b><br>果皮と触れていられるのは<b>最大2日</b>だけ（すぐ酒精強化で発酵を止めるため）。<br>→ 短時間で色・タンニン・風味を引き出す<b>素早く効果的な抽出</b>が欠かせない。</div>
+    <h3 class="sec">⚙️ 5つの抽出方法</h3>
+    <div class="tw"><table>
+      <tr><th>方法</th><th>しくみ</th><th>抽出力</th><th>用途・特徴</th></tr>
+      <tr><td><b>足踏み（ラガール）</b></td><td>深さ約80cmの浅い四角い槽（伝統的に花崗岩）で人が踏む</td><td>◎</td><td>種を潰さず苦いタンニンが出ない。一部の高級品で今も使用</td></tr>
+      <tr><td><b>モダン・ラガール</b></td><td>シリコン製の「足」を付けたロボットが押し、果帽を沈める（2000年〜）</td><td>◎</td><td>足踏みと同等の品質。人手不要だが設備は高価</td></tr>
+      <tr><td><b>ピストン</b></td><td>開放型ステンレス槽でピストンが定期的に果帽を沈める</td><td>○〜◎</td><td>ルモンタージュと併用。ラガールに近い品質</td></tr>
+      <tr><td><b>ルモンタージュ</b></td><td>液を汲み上げて果帽にかける（通常のワインと同じ）</td><td>○</td><td>回数を増やせば濃くできるが、ラガールほどではない</td></tr>
+      <tr><td><b>オートヴィニファイヤー</b></td><td>密閉タンク。発酵のCO₂の圧力で液を押し上げ、果帽にかける（1960年代〜）</td><td>△</td><td>電気不要・人手ほぼ不要で安い。色・ボディが軽め → ベーシックなルビー・トウニー・白向き</td></tr>
+    </table></div>
+    <h3 class="sec">🧪 発酵のポイント</h3>
+    <ul class="dot">
+      <li>風味とタンニンが熟した時に収穫。その頃には酸が低いので<b>補酸が一般的</b></li>
+      <li>酒精強化後は乳酸菌が生きられないため、<b>マロラクティック発酵は起きない</b></li>
+      <li>梗も一緒に入れることが多い（圧搾時の排水路になる）</li>
+      <li>天然酵母が多い（最後まで発酵させる必要がないため）</li>
+      <li>発酵温度：赤 28〜32℃／白 17〜22℃</li>
+      <li>アルコール<b>5〜7%</b>の時点で発酵を止める。止めるタイミングは残したい甘さ（ハウススタイル）次第</li>
+      <li>素早く液を抜いてから酒精強化。残った果皮は別に圧搾・強化し、色やタンニンを足すためにブレンド</li>
+    </ul>
+    <div class="foot">7 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w8" data-tab="🥃酒精強化・ブレンド">
+  <div class="card">
+    <span class="no">No.8</span>
+    <div class="ttl serif">🥃 酒精強化とブレンド</div>
+    <div class="en">Fortification & Blending</div>
+    <h3 class="sec">🥃 アグアルデンテ（酒精強化用スピリッツ）</h3>
+    <div class="kv">
+      <b>🍇 原料</b><span>ブドウまたはブドウ由来の原料</span>
+      <b>🔢 度数</b><span><b>77%（±0.5%）</b>。他の酒精強化ワイン（95〜96%）より低い</span>
+      <b>➕ 量</b><span>発酵中の果汁4Lに対しスピリッツ約1L → アルコール約20%に</span>
+      <b>🎯 強化後の度数</b><span>多くは19〜22%。ベーシックなルビー・トウニー・白・ロゼは最低18%、ライト・ドライ・ホワイトは16.5%</span>
+    </div>
+    <div class="note">💡 77%のスピリッツはニュートラルではなく個性がある。しかも量が多い → <b>ポートにはスピリッツ由来の香りが出やすく、スピリッツの質がポートの質を大きく左右する。</b></div>
+    <div class="tl">
+      <div><b>1967〜1976年</b>全生産者が Casa do Douro から購入</div>
+      <div><b>1976年〜</b>IVP が入札。全社同じで質は高くない（南ポルトガル、のちにフランスの安価なアルコール）</div>
+      <div><b>1991年〜</b>各社が自由に調達。ニュートラルなもの、果実のエステル香があるものなど、ポートごとに使い分け。高級品には高品質なスピリッツ</div>
+    </div>
+    <h3 class="sec">🧪 ブレンド</h3>
+    <ul class="dot">
+      <li>畑・品種・（スタイルにより）収穫年をブレンド。複数品種の混醸も一般的</li>
+      <li>甘さの異なる若いワインを用意して、最終的な甘さを調整</li>
+      <li>多くはノン・ヴィンテージで、<b>毎年同じ味と各社のハウススタイル</b>を保つ（辛めの家、甘めの家など）</li>
+      <li>ヴィンテージ用には色が濃く、凝縮しタンニンの高いワインを選ぶ</li>
+      <li>在庫が多いほど作れるスタイルの幅が広がる</li>
+    </ul>
+    <div class="foot">8 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w9" data-tab="🛢️熟成">
+  <div class="card">
+    <span class="no">No.9</span>
+    <div class="ttl serif">🛢️ 熟成の基本</div>
+    <div class="en">Maturation</div>
+    <h3 class="sec">📍 どこで熟成する？</h3>
+    <ul class="dot">
+      <li>すべてのポートは<b>最初の冬をドウロの産地で</b>過ごす（澱を沈めて澱引き。澱からはロータリー式真空ろ過機で回収）</li>
+      <li>春に<b>ヴィラ・ノヴァ・デ・ガイア</b>のロッジへ運ぶ → 大西洋の影響で涼しく温度が安定し、熟成向き</li>
+      <li>最近はガイアの混雑から、産地の高地に断熱・湿度管理したロッジを建てる生産者も</li>
+    </ul>
+    <h3 class="sec">⚖️ 容器の大きさ＝酸化の度合い</h3>
+    <div class="vs">
+      <div class="box"><h4>🏭 バルセイロ<br><span class="en">Balseiros</span></h4><ul class="dot"><li>最大10万Lの巨大な樽</li><li>酸化を抑えて<b>フレッシュさを保つ</b>貯蔵用</li></ul></div>
+      <div class="box"><h4>🛢️ パイプ<br><span class="en">Pipes</span></h4><ul class="dot"><li>600Lの樽</li><li><b>穏やかに酸化</b>させたいときに使う</li></ul></div>
+    </div>
+    <ul class="dot" style="margin-top:12px">
+      <li>多くのスタイルは<b>古い木樽（主にオーク）</b>で熟成。新樽の香りは不要</li>
+      <li>新しい樽はまず非酒精強化ワインに使い、ニュートラルにしてからポートへ</li>
+      <li>澱引きの頻度や、樽を満たすかどうか（補酒）でも酸化をコントロール</li>
+    </ul>
+    <div class="foot">9 / 16</div>
+  </div>
+</section>
+<section class="page" id="w10" data-tab="🍒ルビー・🍂トウニー">
+  <div class="card">
+    <span class="no">No.10</span>
+    <div class="ttl serif">🍒 ルビー系と 🍂 トウニー系</div>
+    <div class="en">Red Ports — Ruby & Tawny</div>
+    <p class="intro">スタイルの違いは主に「ベースワインの質」と「熟成方法」で決まる。多くのスタイルは IVDP の分析・試飲審査に合格しないと名乗れない。</p>
+    <div class="vs" style="margin-top:12px">
+      <div class="box"><h4>🍒 ルビー系のイメージ</h4><ul class="dot"><li>大きな容器で短期熟成 → 酸化が少ない</li><li>濃いルビー色、赤・黒果実のフレッシュな味わい</li></ul></div>
+      <div class="box"><h4>🍂 トウニー系のイメージ</h4><ul class="dot"><li>小樽で長期熟成 → ゆっくり酸化</li><li>色が褪せて黄褐色に。ドライフルーツ・コーヒー・カラメル・クルミ</li></ul></div>
+    </div>
+
+    <div class="vc" style="margin-top:14px"><h4>🍒 ベーシック・ルビー<span class="en">Basic Ruby</span></h4>
+      <div class="chips"><span class="chip">⏳ 最長3年</span><span class="chip">💴 安価〜中価格</span></div>
+      <div class="kv"><b>🛢️ 造り</b><span>酸素を避ける造り。ステンレス・コンクリート、または1万〜10万Lの古い大樽で熟成。複数年ブレンド</span><b>👁️ 外観</b><span>濃いルビー</span><b>👅 味わい</b><span>ミディアムボディ、中程度のタンニン、赤・黒果実。シンプルで、安いスピリッツによりややアルコールの熱さ</span></div></div>
+
+    <div class="vc"><h4>🍂 ベーシック・トウニー<span class="en">Basic Tawny</span></h4>
+      <div class="chips"><span class="chip">⏳ ルビーと同程度</span></div>
+      <div class="kv"><b>🛢️ 造り</b><span>ロゼのように抽出を軽く、早めに液を抜く → 淡い褐色に。残った濃い部分はルビーに回すことも</span><b>⚠️ 注意</b><span>年数表示トウニーとは<b>色以外ほぼ別物</b></span></div></div>
+
+    <div class="vc"><h4>⭐ リザーヴ・ルビー／リザーヴ・トウニー<span class="en">Reserve</span></h4>
+      <div class="chips"><span class="chip">ルビー：最低熟成期間なし</span><span class="chip">トウニー：木樽で最低6年</span></div>
+      <p style="font-size:14px">ベーシックより凝縮し、高品質・高価格。IVDP の試飲審査が必要。</p></div>
+
+    <div class="vc"><h4>🌰 年数表示トウニー<span class="en">Tawny with an Indication of Age</span></h4>
+      <div class="chips"><span class="chip">10／20／30／40／50年</span><span class="chip">🛢️ 620〜640Lの古樽</span></div>
+      <div class="kv"><b>⏳ 年数</b><span>最低年数ではなく<b>平均に近い目安</b>。複数年のブレンドなので、より若い・古いワインも含む</span><b>👃 香り</b><span>🍇☕🍮🌰 ドライフルーツ（果実の熟成）、コーヒー・カラメル・クルミ（酸化）</span><b>👅 味わい</b><span>タンニンが柔らかく、アルコールがなじむ</span><b>💴 価格</b><span>補酒・澱引きの手間で高コスト。樽の中で自然に清澄されるのでろ過は不要なことが多い。人気上昇・在庫減で値上がり中</span></div>
+      <div class="note sub">新しい流れ：年数表示のない超古酒トウニー（例：Taylor's Scion は150年超、Graham's Ne Oublie は1882年）。超プレミアム価格。</div></div>
+
+    <div class="vc"><h4>📅 コリェイタ<span class="en">Colheita</span></h4>
+      <div class="chips"><span class="chip">単一年のトウニー</span><span class="chip">🛢️ 約550Lの古樽で最低7年</span></div>
+      <ul class="dot"><li>収穫年と瓶詰め年を表示</li><li>7年以上たてば一部だけ瓶詰めし、残りは需要に応じて翌年以降に詰めてもよい</li><li>ヴィンテージ・ポートほど高くないが、非常に古いものは超プレミアム価格</li></ul>
+      <div class="note sub">補足：マデイラのコリェイタは「最低5年」。ポートは「最低7年」なので混同に注意。</div></div>
+    <div class="foot">10 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w11" data-tab="🏆ヴィンテージ系">
+  <div class="card">
+    <span class="no">No.11</span>
+    <div class="ttl serif">🏆 ヴィンテージ系のポート</div>
+    <div class="en">Vintage, Single Quinta, Crusted & LBV</div>
+
+    <div class="vc"><h4>🏆 ヴィンテージ・ポート<span class="en">Vintage Port</span></h4>
+      <div class="chips"><span class="chip">単一年</span><span class="chip">🛢️ 木樽で最長3年</span><span class="chip">🍾 長期の瓶熟成</span></div>
+      <ul class="dot">
+        <li>特に良い年だけ生産者が<b>「宣言（デクラレーション）」</b>して造る。10年に3〜4回程度</li>
+        <li>多くの生産者が宣言した年：2011年・2016年。一部だけの年：2015年</li>
+        <li>収穫2年目に宣言を登録し、IVDP の審査を受ける。市場の状況も判断材料（優良年が2年続くと、2年目が1年目の売上を奪うことも）</li>
+        <li>最上級の畑のブドウ。トウリガ・フランカとトウリガ・ナシオナルが中心で、強く抽出</li>
+        <li>多くは収穫2年目の春（樽で18〜20か月）に、<b>清澄もろ過もせず</b>瓶詰め → 長い瓶熟成で重い澱が出る</li>
+        <li>元祖の超高級版：Quinta do Noval の Nacional（接ぎ木していない古木）</li>
+      </ul>
+      <div class="kv"><b>👁️ 若い頃</b><span>濃い色、フルボディ、高いタンニン、熟した黒果実と花</span><b>⏳ 熟成後</b><span>🍇🍂 ドライフルーツ、森の下草。タンニンとアルコールがなじむ</span><b>💴 価格</b><span>プレミアム〜超プレミアム。樽熟成が短く早く売れるので、生産者にとって利益率が高い</span></div></div>
+
+    <div class="vc"><h4>🏡 シングル・キンタ<span class="en">Single Quinta</span></h4>
+      <ul class="dot"><li>ヴィンテージを宣言しない年に、<b>1つの農園（キンタ）</b>のブドウだけで造る単一年のポート</li><li>例：Taylor's Quinta de Vargellas、Graham's Quinta dos Malvedos</li></ul></div>
+
+    <div class="vc"><h4>🍞 クラステッド<span class="en">Crusted</span></h4>
+      <div class="chips"><span class="chip">複数年ブレンド</span><span class="chip">🛢️ 古樽で最長2年</span></div>
+      <ul class="dot"><li>清澄・ろ過なしで瓶詰め → 瓶の中に澱の「かさぶた（クラスト）」ができる</li><li>瓶詰め年の表示が必要。瓶熟成3年以上で出荷すれば「bottle matured」と表示可</li><li>ヴィンテージに似たスタイルで熟成能力も高い。良〜非常に良い品質、中価格〜プレミアム</li></ul></div>
+
+    <div class="vc"><h4>📦 LBV（レイト・ボトルド・ヴィンテージ）<span class="en">Late Bottled Vintage</span></h4>
+      <div class="chips"><span class="chip">単一年</span><span class="chip">収穫後4〜6年で瓶詰め</span></div>
+      <div class="vs" style="margin-top:8px">
+        <div class="box"><h4>ろ過あり（主流）</h4><ul class="dot"><li>大きな古樽やステンレスで酸化を抑えて貯蔵</li><li>瓶詰め時点で飲み頃。デキャンタ不要</li><li>ルビーやリザーヴ・ルビーより少し濃く、ボディとタンニンがある</li><li>良〜非常に良い品質、中価格</li></ul></div>
+        <div class="box"><h4>ろ過なし（unfiltered）</h4><ul class="dot"><li>古樽で4〜5年、さらに数年瓶熟成してから出荷</li><li>よりフルボディで、瓶熟成で良くなる</li><li>瓶熟成3年以上なら「bottle matured」表示可</li><li>若いヴィンテージに近い味わい。中価格</li></ul></div>
+      </div></div>
+
+    <div class="note">💡 ヴィンテージ・ポート（瓶詰めまで2〜3年）と LBV（4〜6年）の違いは<b>樽で過ごす時間</b>。樽が長いほど、瓶詰め時に飲み頃になっている。</div>
+    <div class="foot">11 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w12" data-tab="🌸ロゼ・🥂白">
+  <div class="card">
+    <span class="no">No.12</span>
+    <div class="ttl serif">🌸 ロゼ・🥂 白・超熟成ポート</div>
+    <div class="en">Rosé, White & Very Old Ports</div>
+
+    <div class="vc"><h4>🌸 ロゼ・ポート（ピンク・ポート）<span class="en">Rosé / Pink Port</span></h4>
+      <div class="chips"><span class="chip">2000年代後半に Croft が考案</span><span class="chip">💴 安価〜中価格</span></div>
+      <ul class="dot"><li>涼しい高地やバイショ・コルゴの黒ブドウを、数時間だけ漬け込んで色を少し出す</li><li>15〜16℃の低温発酵で赤いベリーの香りを保つ</li><li>風味が穏やかでタンニンも少ないので、アルコール感を抑えるため<b>ニュートラルで高品質なスピリッツ</b>を使う</li><li>強化後すぐ瓶詰め、1年以内に出荷。色は淡いピンクオレンジ〜濃いピンク</li></ul></div>
+
+    <h3 class="sec">🥂 白ポート</h3>
+    <p style="font-size:14px">甘さもスタイルもさまざま。表示ルールはトウニーと同じ：<b>リザーヴ</b>（木樽で最低6年）、<b>年数表示</b>（10／20／30／40年）、<b>コリェイタ</b>（単一年・最低7年）。</p>
+    <div class="tw"><table>
+      <tr><th>スタイル</th><th>主な品種</th><th>造り</th><th>外観・味わい</th></tr>
+      <tr><td><b>フルーティー（非酸化）</b></td><td>モスカテル</td><td>破砕後すぐSO₂、低温で数時間漬け込み。17〜18℃で発酵。ステンレスや大きな古樽で短期間</td><td>レモン色、ミディアムボディ。核果や花の香り</td></tr>
+      <tr><td><b>中間</b></td><td>―</td><td>オークで短期間だけ熟成</td><td>フレッシュな果実味が残り、ほのかにナッツ</td></tr>
+      <tr><td><b>酸化熟成</b></td><td>マルヴァジア</td><td>やや長めに漬け込み、20〜22℃で発酵。小さな古樽で数年（年数表示トウニーと同様）</td><td>琥珀〜褐色。カラメル、柑橘の皮、ドライ核果、ナッツ</td></tr>
+    </table></div>
+
+    <h3 class="sec">🕰️ 超熟成ポート（2022年に新設）</h3>
+    <div class="kv"><b>50年</b><span>白ポート・トウニーで新たに認められた年数表示</span><b>VVO</b><span>「Very Very Old」。80年を超えて熟成したもの</span></div>
+    <div class="foot">12 / 16</div>
+  </div>
+</section>
+<section class="page" id="w13" data-tab="🏢業界・IVDP">
+  <div class="card">
+    <span class="no">No.13</span>
+    <div class="ttl serif">🏢 業界構造と IVDP</div>
+    <div class="en">Types of Businesses & the IVDP</div>
+    <h3 class="sec">👨‍🌾 畑は細かく分かれている</h3>
+    <div class="kv">
+      <b>👨‍🌾 畑の所有者</b><span>約2万人、平均わずか2.2ha。多くは中〜大手生産者か協同組合にブドウを売る</span>
+      <b>🤝 協同組合</b><span>地域のワインの約20%を生産。自社ブランドで売れるが、シッパーのブランドが強く、多くは生産者に売る</span>
+      <b>🧑‍💼 ブローカー</b><span>ブドウやワインの取引を仲介</span>
+    </div>
+    <h3 class="sec">🏭 造り手は少数に集約</h3>
+    <p style="font-size:14px">大量生産しているのは30〜35社。<b>大手5社で販売量の80%</b>。</p>
+    <div class="tw"><table>
+      <tr><th>順位</th><th>生産者</th><th>主なブランド</th></tr>
+      <tr><td>1</td><td><b>Porto Cruz</b></td><td>Gran Cruz（単一ブランドで最大）</td></tr>
+      <tr><td>2</td><td><b>Symington Family Estates</b></td><td>Cockburn's、Dow's、Graham's、Warre's ほか</td></tr>
+      <tr><td>3</td><td><b>Sogrape</b>（ポルトガル最大のワイン生産者）</td><td>Sandeman、Offley、Ferreira</td></tr>
+      <tr><td>4</td><td><b>The Fladgate Partnership</b></td><td>Taylor's、Fonseca、Croft、Krohn</td></tr>
+      <tr><td>5</td><td><b>Sogevinus</b></td><td>Burmester、Barros、Cálem、Kopke</td></tr>
+    </table></div>
+    <h3 class="sec">🏛️ IVDP（ポート・ドウロワイン協会）</h3>
+    <p style="font-size:14px">2003年に IVP に代わって設立。ポートと非酒精強化ドウロワインの生産・取引を管理する業界団体。</p>
+    <div class="chips"><span class="chip">年間生産量（ベネフィシオ）の決定</span><span class="chip">畑と企業の登録</span><span class="chip">出荷量の管理：各シッパーの在庫の最大1/3まで</span><span class="chip">分析・試飲審査</span><span class="chip">ポートとドウロワインの販促</span></div>
+    <div class="foot">13 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w14" data-tab="🔠ベネフィシオ">
+  <div class="card">
+    <span class="no">No.14</span>
+    <div class="ttl serif">🔠 ベネフィシオ制度</div>
+    <div class="en">The Beneficio</div>
+    <p class="big" style="margin-top:8px">「その年にポートにしてよいブドウ果汁の量」と、それを決める許可制度</p>
+    <h3 class="sec">🅰️ 畑の格付け（A〜I）</h3>
+    <ul class="dot">
+      <li>場所・標高・向き・土壌・品種などを点数化し、合計点で<b>A（最高）〜I（最低）</b>に分類</li>
+      <li>隣り合う畑でも品種が違えば格付けが変わることがある</li>
+      <li><b>A</b>：最も多くポートを造れる／<b>G・H・I</b>：ポートは造れない（非酒精強化ワインか蒸留用）</li>
+    </ul>
+    <h3 class="sec">⚖️ 量と価格の管理</h3>
+    <ul class="dot">
+      <li>毎年の量は<b>栽培者・生産者・IVDP</b>の3者で、需要と市場在庫を見て合意</li>
+      <li>供給を管理して、ブドウとポートの<b>価格を安定</b>させる。ポート用ブドウの価格も管理</li>
+      <li>1933年から基本は変わらず。平均2.2haの小規模栽培者の生活を支えてきた</li>
+    </ul>
+    <h3 class="sec">🎫 ベネフィシオ・カードの取引</h3>
+    <ul class="dot">
+      <li>畑の所有者は毎年、区画ごとに生産可能量を記したカード（証明書）を受け取る。<b>取引は合法</b></li>
+      <li>本来はカードと同じ格付けのブドウをセットで取引するが、実際は別の区画のブドウが渡されることも（黙認されている）</li>
+      <li>取引と支払いはすべて IVDP を通して記録・管理される</li>
+    </ul>
+    <div class="vs">
+      <div class="box"><h4>例①：生産者が品質を上げる</h4><p style="font-size:13.5px">A級の畑を持つ生産者が、F級のカードとブドウを買う。自社のA級の余剰ブドウを使ってポートを造り、F級のブドウは軽いワインや蒸留に回す。</p></div>
+      <div class="box"><h4>例②：栽培者が少し稼ぐ</h4><p style="font-size:13.5px">B級とF級の畑を持つ栽培者が、B級のカードにF級のブドウを付けて売る。残ったB級のブドウは市場で少し高く売れる。</p></div>
+    </div>
+    <h3 class="sec">💬 制度への批判</h3>
+    <ul class="dot">
+      <li>ポート需要の減少で許可量が減る一方、畑の面積は増加 → 非酒精強化ドウロワイン用ブドウが供給過剰で値下がり</li>
+      <li>ベネフィシオ外のブドウは市場価格でずっと安い。生産者からは「人為的に高いポート用ブドウ代で、ドウロワインを補助している」との声も</li>
+      <li>ドウロDOCは1979年から非酒精強化ワインも対象</li>
+    </ul>
+    <div class="foot">14 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w15" data-tab="📊販売・市場">
+  <div class="card">
+    <span class="no">No.15</span>
+    <div class="ttl serif">📊 販売と市場</div>
+    <div class="en">Port Sales</div>
+    <div class="kv">
+      <b>🏭 生産量（2022年）</b><span>約8,000万L</span>
+      <b>🛒 販売量（2022年）</b><span>約7,000万L</span>
+      <b>📉 傾向</b><span>1900年代後半は伸びたが、2000年以降は減少。一方で平均価格は上昇（年数表示トウニーなど高級品が好調）</span>
+      <b>🌍 輸出比率</b><span>販売量の約82%（2022年）</span>
+    </div>
+    <h3 class="sec">💎 スペシャル・カテゴリーが稼ぐ</h3>
+    <p style="font-size:14px">IVDP は「スタンダード（ルビー・トウニー・白・ロゼ）」と「スペシャル・カテゴリー（リザーヴ、年数表示、コリェイタ、ヴィンテージ、シングル・キンタ、クラステッド、LBV など）」に分類。</p>
+    <div class="vs">
+      <div class="box"><h4>販売量に占める割合</h4><p class="big">約23%</p></div>
+      <div class="box"><h4>販売額に占める割合</h4><p class="big">約45%</p></div>
+    </div>
+    <h3 class="sec">🌍 主要市場</h3>
+    <ul class="dot">
+      <li><b>1位 フランス</b>：国内市場より大きい。安価なポートを食前酒として飲む</li>
+      <li><b>2位 ポルトガル国内</b></li>
+      <li>減少の主因は、フランスやオランダで食前酒として他の飲み物が選ばれるようになったこと</li>
+    </ul>
+    <h3 class="sec">🚀 生産者の対策</h3>
+    <div class="kv">
+      <b>🍷 スティルワイン</b><span>Symington、Quinta do Noval、Ramos Pinto、Niepoort などが非酒精強化ワインに進出。新しい客をポートに呼び込む期待も</span>
+      <b>🎯 ポート特化</b><span>Taylor's はポートに専念してきたが、2023年にドウロ外のワイン会社を買収</span>
+      <b>🍸 新スタイル</b><span>ロゼはカクテルにも。白ポートはトニック割りの食前酒に。蒸留酒よりアルコールが低いのも魅力</span>
+      <b>📸 大容量ボトル</b><span>Graham's は4.5Lのトウニーを発売。レストランでの食後酒やSNS映えを狙う</span>
+    </div>
+    <div class="foot">15 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="w16" data-tab="✅まとめ">
+  <div class="card">
+    <span class="no">No.16</span>
+    <div class="ttl serif">✅ これだけは覚えよう10</div>
+    <div class="en">Key Takeaways</div>
+    <div class="list" style="margin-top:10px">
+      <a><span class="n">1</span><span>ドウロ地方の甘口酒精強化ワイン。名前はポルト、熟成はヴィラ・ノヴァ・デ・ガイア</span></a>
+      <a><span class="n">2</span><span>1703年メシュエン条約、1756年ポンバルの境界画定、2003年 IVDP</span></a>
+      <a><span class="n">3</span><span>西から バイショ・コルゴ（涼・湿）→ シマ・コルゴ → ドウロ・スペリオール（暑・乾）</span></a>
+      <a><span class="n">4</span><span>縦に割れた片岩が水と根を通す。畑はソカルコス・パタマレス・ヴィーニャ・アオ・アルト</span></a>
+      <a><span class="n">5</span><span>推奨5品種。最多はトウリガ・フランカ、長熟の要はトウリガ・ナシオナル</span></a>
+      <a><span class="n">6</span><span>果皮接触は最大2日 → 足踏み・ロボットなどで素早く抽出</span></a>
+      <a><span class="n">7</span><span>アルコール5〜7%で77%のスピリッツを加え、19〜22%・残糖80〜120g/Lに</span></a>
+      <a><span class="n">8</span><span>大樽で短期＝ルビー系、小樽で長期酸化＝トウニー系</span></a>
+      <a><span class="n">9</span><span>ヴィンテージは宣言年のみ・樽2〜3年・無ろ過。LBVは4〜6年で瓶詰め</span></a>
+      <a><span class="n">10</span><span>ベネフィシオ（A〜I）で生産量と価格を管理。大手5社で販売量の8割</span></a>
+    </div>
+    <div class="foot">16 / 16</div>
+  </div>
+</section>
+
+<section class="page" id="tips" data-tab="📖用語集">
+  <div class="card">
+    <div class="ttl serif">📖 ポート用語集</div>
+    <div class="en">Glossary</div>
+    <div class="vc"><h4>アグアルデンテ<span class="en">Aguardente</span></h4><p style="font-size:14px">酒精強化に使うブドウ由来のスピリッツ。77%（±0.5%）。</p></div>
+    <div class="vc"><h4>ロッジ<span class="en">Lodge</span></h4><p style="font-size:14px">ヴィラ・ノヴァ・デ・ガイアにあるポートの貯蔵・熟成庫。</p></div>
+    <div class="vc"><h4>キンタ<span class="en">Quinta</span></h4><p style="font-size:14px">ブドウ畑を持つ農園・醸造所。</p></div>
+    <div class="vc"><h4>シッパー<span class="en">Shipper</span></h4><p style="font-size:14px">もとはポートを輸出する代理商。今は多くが生産者になっている。</p></div>
+    <div class="vc"><h4>ラガール<span class="en">Lagar / Lagares</span></h4><p style="font-size:14px">深さ約80cmの浅い四角い発酵槽。足踏みやロボットで抽出する。</p></div>
+    <div class="vc"><h4>オートヴィニファイヤー<span class="en">Autovinifier</span></h4><p style="font-size:14px">発酵のCO₂の圧力で液を循環させる密閉タンク。電気不要。</p></div>
+    <div class="vc"><h4>ソカルコス / パタマレス / ヴィーニャ・アオ・アルト</h4><p style="font-size:14px">石積みの段々畑／土の土手の段々畑／斜面を縦に植える畑。</p></div>
+    <div class="vc"><h4>片岩<span class="en">Schist</span></h4><p style="font-size:14px">層状に割れやすい岩。ドウロでは縦に割れ、水と根を通す。</p></div>
+    <div class="vc"><h4>フィールド・ブレンド<span class="en">Field Blend</span></h4><p style="font-size:14px">1つの畑に複数品種を混植し、一緒に収穫・醸造すること。</p></div>
+    <div class="vc"><h4>ヴィーニャ・ヴェーリャ<span class="en">Vinha Velha</span></h4><p style="font-size:14px">古木。100年を超える樹もあり、高級ポートの重要な原料。</p></div>
+    <div class="vc"><h4>バルセイロ / パイプ<span class="en">Balseiro / Pipe</span></h4><p style="font-size:14px">最大10万Lの巨大樽／600Lの樽。</p></div>
+    <div class="vc"><h4>デクラレーション<span class="en">Declaration</span></h4><p style="font-size:14px">優良年に生産者がヴィンテージ・ポートを造ると「宣言」すること。</p></div>
+    <div class="vc"><h4>ベネフィシオ<span class="en">Beneficio</span></h4><p style="font-size:14px">その年にポートにできる果汁の量と、A〜Iの畑の格付けによる許可制度。</p></div>
+    <div class="vc"><h4>IVDP</h4><p style="font-size:14px">Instituto dos Vinhos do Douro e do Porto。ポートとドウロワインを管理する団体（2003年〜）。</p></div>
+    <div class="vc"><h4>メシュエン条約<span class="en">Methuen Treaty</span></h4><p style="font-size:14px">1703年。英国でポルトガルワインの関税を優遇した条約。</p></div>
+  </div>
+</section>
+
+<a class="home" href="#top">🏠 表紙に戻る</a>
+</main>
+<footer>出典：WSET Level 4 Diploma in Wines — D5 Fortified Wines, Chapter 4 Port</footer>
+<script>
+(function(){
+  var pages=[].slice.call(document.querySelectorAll('.page'));
+  var tabs=document.getElementById('tabs');
+  pages.forEach(function(p){var a=document.createElement('a');a.href='#'+p.id;a.textContent=p.dataset.tab;tabs.appendChild(a);});
+  var links=[].slice.call(tabs.children);
+  function onScroll(){
+    var y=window.scrollY+80, idx=-1;
+    pages.forEach(function(p,i){if(p.offsetTop<=y)idx=i;});
+    links.forEach(function(a,i){var on=i===idx;if(on&&!a.classList.contains('on')&&a.scrollIntoView)tabs.scrollTo({left:a.offsetLeft-tabs.clientWidth/2+a.clientWidth/2,behavior:'smooth'});a.classList.toggle('on',on);});
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+})();
+</script>
+</body>
+</html>
